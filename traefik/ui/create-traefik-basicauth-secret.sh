@@ -7,7 +7,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: traefik-auth
-  namespace: kube-system
+  namespace: traefik
 type: Opaque
 stringData:
   users: ${USERS}
