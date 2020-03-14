@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: traefik-imroc-io
+  namespace: kube-system
+spec:
+  secretName: traefik-imroc-io-tls
+  issuerRef:
+    name: letsencrypt-dns01
+    kind: ClusterIssuer
+  dnsNames:
+  - traefik.imroc.io

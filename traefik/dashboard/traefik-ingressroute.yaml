@@ -1,0 +1,18 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: kube-system
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`traefik.imroc.io`)
+    middlewares:
+    - name: traefik-auth
+    services:
+    - kind: TraefikService
+      name: api@internal
+  tls:
+    secretName: traefik-imroc-io-tls
