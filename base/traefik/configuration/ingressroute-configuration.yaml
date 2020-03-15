@@ -5,3 +5,9 @@ nameReference:
   - path: spec/routes/services/name
     kind: IngressRoute
     group: traefik.containo.us
+- kind: Middleware
+  group: traefik.containo.us
+  fieldSpecs:
+  - path: spec/routes/middlewares/name
+    kind: IngressRoute
+    group: traefik.containo.us
