@@ -1,0 +1,7 @@
+nameReference:
+- kind: Service
+  version: v1
+  fieldSpecs:
+  - path: spec/routes/services/name
+    kind: IngressRoute
+    group: traefik.containo.us

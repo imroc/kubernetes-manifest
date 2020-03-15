@@ -2,7 +2,6 @@ apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
   name: traefik-imroc-io
-  namespace: traefik
 spec:
   secretName: traefik-imroc-io-tls
   issuerRef:
