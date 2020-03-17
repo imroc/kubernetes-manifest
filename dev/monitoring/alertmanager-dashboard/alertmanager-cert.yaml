@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: alertmanager-imroc-io
+  namespace: monitoring
+spec:
+  secretName: alertmanager-imroc-io-tls
+  issuerRef:
+    name: letsencrypt-dns01
+    kind: ClusterIssuer
+  dnsNames:
+  - alertmanager.imroc.io

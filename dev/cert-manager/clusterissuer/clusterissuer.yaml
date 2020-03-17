@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-dns01
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: roc@imroc.io
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-dns01
+    solvers:
+    - selector: {} # An empty 'selector' means that this solver matches all domains
+      dns01: # ACME DNS-01 solver configurations
+        cloudflare:
+          email: roc@imroc.io
+          apiTokenSecretRef:
+            name: cloudflare-api-token
+            key: api-token
