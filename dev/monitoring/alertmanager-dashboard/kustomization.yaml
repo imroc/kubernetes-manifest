@@ -2,5 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+- alertmanager-ingressroute.yaml
 - alertmanager-ingressroute-tls.yaml
 - alertmanager-cert.yaml 

@@ -1,0 +1,16 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: alertmanager-http
+  namespace: monitoring
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`alertmanager.imroc.io`)
+    kind: Rule
+    services:
+    - name: alertmanager-main
+      port: 9093
+    middlewares:
+    - name: https-redirect

@@ -16,3 +16,7 @@ secretGenerator:
 
 resources:
 - monitoring-basicauth-middleware.yaml
+- redirect-https-middleware.yaml
+
+patchesStrategicMerge:
+- alertmanager-secret.yaml
