@@ -1,0 +1,11 @@
+- op: replace
+  path: "/spec/template/spec/volumes/0"
+  value:
+    name: grafana-storage
+    nfs:
+      server: 10.0.0.20
+      path: /grafana
+- op: add
+  path: "/spec/template/spec/securityContext"
+  value:
+    runAsUser: 0

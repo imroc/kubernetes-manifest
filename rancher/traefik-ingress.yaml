@@ -1,0 +1,55 @@
+---
+# Source: expose/templates/cert.yaml
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: rancher-imroc-io
+spec:
+  dnsNames:
+  - rancher.imroc.io
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-dns01
+  secretName: rancher-imroc-io-tls
+---
+# Source: expose/templates/ingressroute.yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rancher-http
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: Host(`rancher.imroc.io`)
+    middlewares:
+    - name: https-redirect
+    services:
+    - name: rancher
+      port: 80
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rancher-https
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`rancher.imroc.io`)
+    services:
+    - name: rancher
+      port: 80
+  tls:
+    secretName: rancher-imroc-io-tls
+---
+# Source: expose/templates/middleware.yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+spec:
+  redirectScheme:
+    permanent: true
+    scheme: https
