@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: blackbox-exporter
+  namespace: monitoring
+spec:
+  ports:
+  - name: blackbox-port
+    port: 9115
+    protocol: TCP
+    targetPort: 9115
+  selector:
+    app: blackbox-exporter
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blackbox-exporter-config
+  namespace: monitoring
+data:
+  blackbox.yml: |-
+    modules:
+      ping: 
+        prober: icmp
+        timeout: 10s
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: blackbox-exporter
+  name: blackbox-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  template:
+    metadata:
+      labels:
+        app: blackbox-exporter
+      name: blackbox-exporter
+    spec:
+      containers:
+      - args:
+        - --config.file=/etc/blackbox_exporter/blackbox.yml
+        - --log.level=info
+        - --web.listen-address=:9115
+        image: prom/blackbox-exporter:v0.16.0
+        imagePullPolicy: IfNotPresent
+        name: blackbox-exporter
+        ports:
+        - containerPort: 9115
+          name: blackbox-port
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/blackbox_exporter
+          name: config
+      volumes:
+      - configMap:
+          name: blackbox-exporter-config
+        name: config
