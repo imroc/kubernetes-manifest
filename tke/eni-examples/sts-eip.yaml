@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: busybox-eip
+spec:
+  serviceName: "busybox"
+  replicas: 3
+  template:
+    metadata:
+      annotations:
+        tke.cloud.tencent.com/networks: "tke-route-eni"
+        tke.cloud.tencent.com/vpc-ip-claim-delete-policy: "Never"
+        tke.cloud.tencent.com/eip-attributes: ""
+        tke.cloud.tencent.com/eip-claim-delete-policy: "Never"
+      labels:
+        app: busybox-eip
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: busybox
+          image: busybox
+          command: ["sleep", "9989829989"]
+          resources:
+            requests:
+              tke.cloud.tencent.com/eni-ip: "1"
+              tke.cloud.tencent.com/eip: "1"
+            limits:
+              tke.cloud.tencent.com/eni-ip: "1"
+              tke.cloud.tencent.com/eip: "1"

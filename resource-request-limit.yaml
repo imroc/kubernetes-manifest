@@ -1,4 +1,4 @@
-# For workload
+# For workload (Deployment, DaemonSet ...)
         resources:
           limits:
             cpu: 300m
@@ -6,3 +6,11 @@
           requests:
             cpu: 150m
             memory: 200Mi
+# For Pod
+    resources:
+      limits:
+        cpu: 300m
+        memory: 2000Mi
+      requests:
+        cpu: 150m
+        memory: 200Mi

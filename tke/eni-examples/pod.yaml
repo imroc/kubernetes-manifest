@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    tke.cloud.tencent.com/networks: "tke-route-eni"
+  labels:
+    app: busybox
+  name: busybox
+spec:
+  containers:
+  - command: ["sleep", "2300000"]
+    image: busybox
+    imagePullPolicy: IfNotPresent
+    name: busybox
+    resources:
+      requests:
+        tke.cloud.tencent.com/eni-ip: "1"
+      limits:
+        tke.cloud.tencent.com/eni-ip: "1"

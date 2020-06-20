@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: oomguard
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: system:oomguard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: oomguard
+    namespace: kube-system
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: oom-guard
+  namespace: kube-system
+  labels:
+    app: oom-guard
+spec:
+  selector:
+    matchLabels:
+      app: oom-guard
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+      labels:
+        app: oom-guard
+    spec:
+      serviceAccountName: oomguard
+      hostPID: true
+      hostNetwork: true
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: k8s-event-writer
+        image: ccr.ccs.tencentyun.com/paas/k8s-event-writer:v1.6
+        resources:
+          limits:
+            cpu: 10m
+            memory: 60Mi
+          requests:
+            cpu: 10m
+            memory: 30Mi
+        args:
+        - --logtostderr
+        - --unix-socket=true
+        env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+        volumeMounts:
+        - name: unix
+          mountPath: /unix
+      - name: oomguard
+        image: ccr.ccs.tencentyun.com/paas/oomguard:nosoft-v2
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        resources:
+          limits:
+            cpu: 10m
+            memory: 60Mi
+          requests:
+            cpu: 10m
+            memory: 30Mi
+        volumeMounts:
+        - name: cgroupdir
+          mountPath: /sys/fs/cgroup/memory
+        - name: unix
+          mountPath: /unix
+        - name: kmsg
+          mountPath: /dev/kmsg
+          readOnly: true
+        command: ["/oom-guard"]
+        args: 
+        - --v=2
+        - --logtostderr
+        - --root=/sys/fs/cgroup/memory
+        - --walkIntervalSeconds=277
+        - --inotifyResetSeconds=701
+        - --port=0
+        - --margin-ratio=0.02
+        - --min-margin=1
+        - --max-margin=30
+        - --guard-ms=50
+        - --policy=container
+        - --openSoftLimit=false
+        - --webhook-url=http://localhost/message
+        env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+      volumes:
+      - name: cgroupdir
+        hostPath:
+          path: /sys/fs/cgroup/memory
+      - name: unix
+        emptyDir: {}
+      - name: kmsg
+        hostPath:
+          path: /dev/kmsg
