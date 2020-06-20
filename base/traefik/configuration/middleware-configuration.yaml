@@ -1,7 +1,0 @@
-nameReference:
-- kind: Secret
-  version: v1
-  fieldSpecs:
-  - path: spec/basicAuth/secret
-    kind: Middleware
-    group: traefik.containo.us

@@ -1,9 +1,0 @@
-# Declaring the user list
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: monitoring-auth
-  namespace: monitoring
-spec:
-  basicAuth:
-    secret: monitoring-auth
