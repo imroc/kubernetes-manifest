@@ -1,0 +1,42 @@
+certs:
+- name: grafana-imroc-io
+  spec:
+    secretName: grafana-imroc-io-tls
+    issuerRef:
+      name: letsencrypt-dns01
+      kind: ClusterIssuer
+    dnsNames:
+    - grafana.imroc.io
+
+middlewares:
+- name: https-redirect
+  spec:
+    redirectScheme:
+      scheme: https
+      permanent: true
+
+ingressRoutes:
+- name: grafana-http
+  spec:
+    entryPoints:
+      - web
+    routes:
+    - match: Host(`grafana.imroc.io`)
+      kind: Rule
+      services:
+      - name: roc-grafana
+        port: 80
+      middlewares:
+      - name: https-redirect
+- name: grafana-https
+  spec:
+    entryPoints:
+      - websecure
+    routes:
+    - match: Host(`grafana.imroc.io`)
+      kind: Rule
+      services:
+      - name: roc-grafana
+        port: 80
+    tls:
+      secretName: grafana-imroc-io-tls
